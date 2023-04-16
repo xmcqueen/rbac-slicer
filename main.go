@@ -78,22 +78,9 @@ func main() {
 	}
 	sort.Strings(keys)
 
-	resourcesCounter := map[string]int{}
-	for _, key := range keys {
-		for _, v := range resources[key] {
-			resourceKey := fmt.Sprintf("%s %s", key, strings.Join(v, ","))
-			fmt.Println(resourceKey)
-			resourcesCounter[resourceKey]++
-		}
-	}
+	resourcesCounter := countThem(resources)
 
-	verbsCounter := map[string]int{}
-	for _, key := range keys {
-		for _, v := range verbs[key] {
-			verbsKey := fmt.Sprintf("%s %s", key, strings.Join(v, ","))
-			verbsCounter[verbsKey]++
-		}
-	}
+	verbsCounter := countThem(verbs)
 
 	for k, v := range resourcesCounter {
 		fmt.Println(k, v)
@@ -104,4 +91,16 @@ func main() {
 	}
 
 	return
+}
+
+func countThem(dat map[string][][]string) map[string]int {
+	rv := map[string]int{}
+	for k, v := range dat {
+		for _, v := range v {
+			key := fmt.Sprintf("%s %s", k, strings.Join(v, ","))
+			rv[key]++
+		}
+	}
+
+	return rv
 }
