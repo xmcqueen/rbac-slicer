@@ -96,13 +96,9 @@ func sortKeys(dat map[string]int) (rv []string) {
 func countThem(dat map[string][][]string) map[string]int {
 	rv := map[string]int{}
 	for k, v := range dat {
-			//fmt.Println("k", k)
 		for _, v := range v {
-			//fmt.Println("v", v)
 			key := fmt.Sprintf("%s %s", k, strings.Join(v, ","))
-			//fmt.Println("key", key)
 			rv[key] = rv[key] + 1
-			//fmt.Println("count", rv[key])
 		}
 	}
 
