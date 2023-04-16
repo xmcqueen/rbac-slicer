@@ -9,25 +9,11 @@ import (
 	"strings"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//rbacv1 "k8s.io/apimachinery/pkg/apis/rbac/v1"
-	//rbacv1 "k8s.io/api/rbac/v1"
 
 	"q/rbac-slicer/kubevar"
 )
 
 // make some reports showing the general state of roles
-
-// kubectl  get role -A  | tee all-roles.out
-// cat all-roles.out | sed 1d | awk '{ print $1 "/" $2 }' | parallel
-//  kubectl -n {//} get role {/} -o json | jq '.rules[]|select(.apiGroups[0]=="")' | jq -c | tee all-coreapi-roles.out
-
-// get roles
-// https://k8s-1.apiserver.prod-lva1.atd.prod.linkedin.com:6443/apis/rbac.authorization.k8s.io/v1/roles?limit=500
-// https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#role-v1-rbac-authorization-k8s-io
-
-// needs some hashes
-// apigroup resources - the list of resources
-// apigroup verbs - the list of verbs
 
 func main() {
 
@@ -53,8 +39,8 @@ func main() {
 		panic(err.Error())
 	}
 
-	resources := map[string][]string{}
-	verbs := map[string][]string{}
+	resources := map[string][][]string{}
+	verbs := map[string][][]string{}
 
 	for _, role := range roles.Items {
 		for _, rule := range role.Rules {
@@ -70,17 +56,19 @@ func main() {
 			}
 			apigroupsKey := strings.Join(apigroups, ",")
 
-			if v, found := resources[apigroupsKey]; found {
-				v = append(v, resources[apigroupsKey]...)
-				continue
+			if _, found := resources[apigroupsKey]; found {
+				resources[apigroupsKey] = append(resources[apigroupsKey], rule.Resources)
+			} else {
+				resources[apigroupsKey] = [][]string{}
+				resources[apigroupsKey] = append(resources[apigroupsKey], rule.Resources)
 			}
-			resources[apigroupsKey] = rule.Resources
 
-			if v, found := verbs[apigroupsKey]; found {
-				v = append(v, verbs[apigroupsKey]...)
-				continue
+			if _, found := verbs[apigroupsKey]; found {
+				verbs[apigroupsKey] = append(resources[apigroupsKey], rule.Verbs)
+			} else {
+				verbs[apigroupsKey] = [][]string{}
+				verbs[apigroupsKey] = append(verbs[apigroupsKey], rule.Verbs)
 			}
-			verbs[apigroupsKey] = rule.Verbs
 		}
 	}
 
@@ -90,11 +78,15 @@ func main() {
 	}
 	sort.Strings(keys)
 
-	for _, apigroup := range keys {
-		fmt.Println(apigroup, strings.Join(resources[apigroup], ","))
+	for _, key := range keys {
+		for _, v := range resources[key] {
+			fmt.Println(key, strings.Join(v, ","))
+		}
 	}
-	for _, apigroup := range keys {
-		fmt.Println(apigroup, strings.Join(verbs[apigroup], ","))
+	for _, key := range keys {
+		for _, v := range verbs[key] {
+			fmt.Println(key, strings.Join(v, ","))
+		}
 	}
 
 	return
