@@ -52,7 +52,6 @@ func main() {
 					continue
 				}
 				apigroups = append(apigroups, grp)
-
 			}
 			apigroupsKey := strings.Join(apigroups, ",")
 
