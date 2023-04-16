@@ -72,33 +72,38 @@ func main() {
 		}
 	}
 
-	keys := make([]string, 0, len(resources))
-	for k := range resources {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
 	resourcesCounter := countThem(resources)
-
 	verbsCounter := countThem(verbs)
 
-	for k, v := range resourcesCounter {
-		fmt.Println(k, v)
+	for _, k := range sortKeys(resourcesCounter) {
+		fmt.Println(k, resourcesCounter[k])
 	}
 
-	for k, v := range verbsCounter {
-		fmt.Println(k, v)
+	for _, k := range sortKeys(verbsCounter) {
+		fmt.Println(k, verbsCounter[k])
 	}
 
 	return
 }
 
+func sortKeys(dat map[string]int) (rv []string) {
+	for k := range dat {
+		rv = append(rv, k)
+	}
+	sort.Strings(rv)
+	return 
+}
+
 func countThem(dat map[string][][]string) map[string]int {
 	rv := map[string]int{}
 	for k, v := range dat {
+			//fmt.Println("k", k)
 		for _, v := range v {
+			//fmt.Println("v", v)
 			key := fmt.Sprintf("%s %s", k, strings.Join(v, ","))
-			rv[key]++
+			//fmt.Println("key", key)
+			rv[key] = rv[key] + 1
+			//fmt.Println("count", rv[key])
 		}
 	}
 
