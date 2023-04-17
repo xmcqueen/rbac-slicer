@@ -34,7 +34,6 @@ func main() {
 
 	cs := kubeconfig.Clientset
 	roles, err := cs.RbacV1().Roles("").List(context.TODO(), metav1.ListOptions{LabelSelector: *labelSelector})
-
 	if err != nil {
 		panic(err.Error())
 	}
