@@ -63,7 +63,7 @@ func main() {
 			}
 
 			if _, found := verbs[apigroupsKey]; found {
-				verbs[apigroupsKey] = append(resources[apigroupsKey], rule.Verbs)
+				verbs[apigroupsKey] = append(verbs[apigroupsKey], rule.Verbs)
 			} else {
 				verbs[apigroupsKey] = [][]string{}
 				verbs[apigroupsKey] = append(verbs[apigroupsKey], rule.Verbs)
@@ -78,10 +78,14 @@ func main() {
 	if *sortByCount {
 		ranker = rankByWordCount
 	}
+
+	fmt.Println("Resources:")
 	for _, k := range ranker(resourcesCounter) {
 		fmt.Println(k, resourcesCounter[k])
 	}
 
+	fmt.Println("")
+	fmt.Println("Verbs:")
 	for _, k := range ranker(verbsCounter) {
 		fmt.Println(k, verbsCounter[k])
 	}

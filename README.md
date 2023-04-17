@@ -8,15 +8,28 @@ This is a demo that is useful, but needs more work.
 
 For example there might be:
 
-example verbs from the coordination.k8s.io apigroup
-- coordination.k8s.io get,watch,list,delete,update,create 1
-- coordination.k8s.io leases 21
+# Examples Data
 
-example resources from the core apigroup
+## verbs sorted by apigroup
+- admissionregistration.k8s.io/v1 * 1
+- apiextensions.k8s.io * 1
+- apiextensions.k8s.io get,list,watch,delete 37
+- app.k8s.io * 2
+- apps * 13
+- apps get 7
+- apps get,list,watch 1
+- apps get,watch,update,list,create,delete 1
+- apps get,watch,update,list,create,delete,patch 2
+- apps,extensions get,list,watch 1
+
+## resources from the various apigroups sorted by count
 - core configmaps 66
-- core configmaps,namespaces,pods,secrets 1
-- core configmaps,persistentvolumeclaims,services 1
-- core configmaps,secrets 2
+- policy podsecuritypolicies 45
+- core events 44
+- apiextensions.k8s.io customresourcedefinitions 38
+- core secrets 36
+- core pods 28
+- getambassador.io * 22
 
 # Usage
 
