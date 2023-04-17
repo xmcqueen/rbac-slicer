@@ -17,3 +17,14 @@ example resources from the core apigroup
 - core configmaps,namespaces,pods,secrets 1
 - core configmaps,persistentvolumeclaims,services 1
 - core configmaps,secrets 2
+
+# Usage
+
+```
+Usage of ./rbac-slicer:
+  -c    sort the results by count
+  -kubeconfig value
+        the path to the kubeconfig
+  -l string
+        a label selector to filter the results
+```
