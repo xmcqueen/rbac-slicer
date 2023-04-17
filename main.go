@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -20,6 +19,7 @@ func main() {
 	var kubeconfig kubevar.Kubeconfig
 	flag.Var(&kubeconfig, "kubeconfig", "the path to the kubeconfig")
 	labelSelector := flag.String("l", "", "a label selector to filter the results")
+	sortByCount := flag.Bool("c", false, "sort the results by count")
 
 	flag.Parse()
 
@@ -74,46 +74,19 @@ func main() {
 	resourcesCounter := countThem(resources)
 	verbsCounter := countThem(verbs)
 
-	for _, p := range rankByWordCount(resourcesCounter) {
-		fmt.Println(p.Key, p.Value)
+	ranker := sortKeys
+	if *sortByCount {
+		ranker = rankByWordCount
+	}
+	for _, k := range ranker(resourcesCounter) {
+		fmt.Println(k, resourcesCounter[k])
 	}
 
-	for _, p := range rankByWordCount(verbsCounter) {
-		fmt.Println(p.Key, p.Value)
+	for _, k := range ranker(verbsCounter) {
+		fmt.Println(k, verbsCounter[k])
 	}
 
 	return
-}
-
-//https://stackoverflow.com/questions/18695346/how-can-i-sort-a-mapstringint-by-its-values
-type Pair struct {
-  Key string
-  Value int
-}
-
-type PairList []Pair
-
-func (p PairList) Len() int { return len(p) }
-func (p PairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
-func (p PairList) Swap(i, j int){ p[i], p[j] = p[j], p[i] }
-
-func rankByWordCount(wordFrequencies map[string]int) PairList {
-  pl := make(PairList, len(wordFrequencies))
-  i := 0
-  for k, v := range wordFrequencies {
-    pl[i] = Pair{k, v}
-    i++
-  }
-  sort.Sort(sort.Reverse(pl))
-  return pl
-}
-
-func sortKeys(dat map[string]int) (rv []string) {
-	for k := range dat {
-		rv = append(rv, k)
-	}
-	sort.Strings(rv)
-	return 
 }
 
 func countThem(dat map[string][][]string) map[string]int {
